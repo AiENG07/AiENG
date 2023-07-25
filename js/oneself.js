@@ -1,0 +1,1 @@
+console.log("感谢您的浏览，我的博客：https://github-lp.github.io/lp/");
