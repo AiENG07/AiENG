@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深入理解CSS Grid布局 - 技术博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        /* 继承主页样式 */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --text-color: #34495e;
+            --bg-color: #f8f9fa;
+            --code-bg: #282c34;
+        }
+
+        .article-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .article-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .article-tags {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #e0f2fe;
+            color: var(--secondary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .article-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            cursor: zoom-in;
+        }
+
+        .article-content pre {
+            background: var(--code-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        .article-content code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        .table-of-contents {
+            position: fixed;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 250px;
+        }
+
+        .toc-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .toc-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc-link {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.3rem 0;
+            display: block;
+            transition: all 0.2s ease;
+        }
+
+        .toc-link:hover {
+            color: var(--secondary-color);
+            transform: translateX(5px);
+        }
+
+        .social-share {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .share-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .share-btn.twitter {
+            background: #1da1f2;
+            color: white;
+        }
+
+        .share-btn.weibo {
+            background: #e6162d;
+            color: white;
+        }
+
+        .related-articles {
+            margin-top: 3rem;
+            border-top: 1px solid #eee;
+            padding-top: 2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .table-of-contents {
+                position: static;
+                max-width: 100%;
+                transform: none;
+                margin-bottom: 2rem;
+            }
+        }
+
+        /* 图片灯箱效果 */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏（与主页相同） -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">AiENG</a>
+
+            <div class="navbar-items">
+                <div class="navbar-item">
+                    <a href="#"><span class="nav-icon circle"></span>友人帐</a>
+                </div>
+
+                <div class="navbar-item has-submenu">
+                    <a href="#">
+                        <span class="nav-icon triangle"></span>
+                        朋友圈
+                    </a>
+                    <ul class="navbar-item-child">
+                        <li><a href="#">好友动态</a></li>
+                        <li><a href="#">互动消息</a></li>
+                        <li><a href="#">特别关注</a></li>
+                    </ul>
+                </div>
+
+                <div class="navbar-item">
+                    <a href="#">留言板</a>
+                </div>
+
+                <!-- 关于 -->
+                <div class="navbar-item">
+                    <a href="#">关于</a>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <!-- 搜索框 -->
+                <input type="text" class="search-box" placeholder="搜索文章..." id="searchInput">
+            </div>
+        </div>
+    </nav>
+
+    <main class="article-container">
+        <article>
+            <header class="article-header">
+                <h1 class="article-title">深入理解CSS Grid布局</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-user"></i> AiENG</span>
+                    <span><i class="fas fa-calendar-alt"></i> 2023-08-30</span>
+                    <span><i class="fas fa-eye"></i> 2356 浏览</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">前端开发</span>
+                    <span class="tag">CSS3</span>
+                    <span class="tag">布局</span>
+                </div>
+            </header>
+
+            <div class="table-of-contents">
+                <div class="toc-title">目录导航</div>
+                <ul class="toc-list">
+                    <li><a href="#section1" class="toc-link">Grid布局简介</a></li>
+                    <li><a href="#section2" class="toc-link">基本概念</a></li>
+                    <li><a href="#section3" class="toc-link">实战案例</a></li>
+                </ul>
+            </div>
+
+            <div class="article-content">
+                <h2 id="section1">一、Grid布局简介</h2>
+                <p>CSS Grid布局是当今最强大的布局系统之一...</p>
+                <img src="grid-example.jpg" alt="Grid布局示例">
+
+                <h2 id="section2">二、基本概念</h2>
+                <pre><code class="css">
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+                </code></pre>
+
+                <h2 id="section3">三、实战案例</h2>
+                <p>下面我们通过一个响应式布局案例...</p>
+            </div>
+
+            <div class="social-share">
+                <button class="share-btn twitter">
+                    <i class="fab fa-twitter"></i>
+                    分享到Twitter
+                </button>
+                <button class="share-btn weibo">
+                    <i class="fab fa-weibo"></i>
+                    分享到微博
+                </button>
+            </div>
+        </article>
+
+        <section class="related-articles">
+            <h3>相关推荐</h3>
+            <div class="article-list">
+                <!-- 相关文章列表 -->
+            </div>
+        </section>
+    </main>
+
+    <div class="lightbox" id="lightbox">
+        <img src="" alt="放大图片">
+    </div>
+
+    <!-- 页脚（与主页相同） -->
+    <footer class="site-footer">...</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>
+        // 代码高亮
+        hljs.highlightAll();
+
+        // 目录导航平滑滚动
+        document.querySelectorAll('.toc-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+
+        // 图片灯箱
+        document.querySelectorAll('.article-content img').forEach(img => {
+            img.addEventListener('click', () => {
+                const lightbox = document.getElementById('lightbox');
+                lightbox.style.display = 'flex';
+                lightbox.querySelector('img').src = img.src;
+            });
+        });
+
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                e.currentTarget.style.display = 'none';
+            }
+        });
+
+        // 社交分享
+        document.querySelector('.share-btn.twitter').addEventListener('click', () => {
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/share?url=${url}`, '_blank');
+        });
+
+        // 滚动高亮目录
+        window.addEventListener('scroll', () => {
+            const headings = document.querySelectorAll('h2');
+            let currentSection = '';
+            
+            headings.forEach(heading => {
+                const rect = heading.getBoundingClientRect();
+                if (rect.top <= 200) {
+                    currentSection = `#${heading.id}`;
+                }
+            });
+
+            document.querySelectorAll('.toc-link').forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === currentSection);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章编辑 - 技术博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="../../css/edit.css">
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+    <!-- 保持原有导航栏 -->
+     <!-- 头部 -->
+     <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">AiENG</a>
+
+            <div class="navbar-items">
+                <div class="navbar-item">
+                    <a href="#"><span class="nav-icon circle"></span>友人帐</a>
+                </div>
+
+                <div class="navbar-item has-submenu">
+                    <a href="#">
+                        <span class="nav-icon triangle"></span>
+                        朋友圈
+                    </a>
+                    <ul class="navbar-item-child">
+                        <li><a href="#">好友动态</a></li>
+                        <li><a href="#">互动消息</a></li>
+                        <li><a href="#">特别关注</a></li>
+                    </ul>
+                </div>
+
+                <div class="navbar-item">
+                    <a href="#">留言板</a>
+                </div>
+
+                <!-- 关于 -->
+                <div class="navbar-item">
+                    <a href="#">关于</a>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <!-- 搜索框 -->
+                <input type="text" class="search-box" placeholder="搜索文章..." id="searchInput">
+            </div>
+        </div>
+    </nav>
+
+    <main class="editor-container">
+        <div class="markdown-editor">
+            <div class="editor-header">
+                <input type="text" id="postTitle" placeholder="输入文章标题...">
+            </div>
+            <div class="editor-body">
+                <textarea id="markdownEditor"></textarea>
+            </div>
+            <div class="live-stats">
+                <span id="wordCount">0</span> 字
+                <span id="charCount">0</span> 字符
+            </div>
+        </div>
+
+        <div class="metadata-sidebar">
+            <div class="form-group">
+                <label class="form-label">文章标签</label>
+                <div class="tag-container" id="tagContainer"></div>
+                <input type="text" id="tagInput" placeholder="输入标签后按Enter添加">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">分类选择</label>
+                <select class="form-control" id="postCategory">
+                    <option value="technology">技术文章</option>
+                    <option value="life">生活随笔</option>
+                    <option value="tutorial">教程指南</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">封面图片</label>
+                <div class="cover-upload" id="coverUpload">
+                    <i class="fas fa-upload"></i>
+                    <span>点击上传封面图</span>
+                    <img id="coverPreview" alt="封面预览">
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary">保存草稿</button>
+                <button class="btn btn-primary">立即发布</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 保持原有页脚 -->
+    <footer class="site-footer">...</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/markdown/markdown.min.js"></script>
+    <script>
+        // 初始化Markdown编辑器
+        const editor = CodeMirror.fromTextArea(document.getElementById('markdownEditor'), {
+            lineNumbers: true,
+            mode: 'markdown',
+            theme: 'default',
+            lineWrapping: true,
+            extraKeys: {
+                "Ctrl-B": "toggleBold",
+                "Ctrl-I": "toggleItalic"
+            }
+        });
+
+        // 实时字数统计
+        editor.on('change', (cm) => {
+            const content = cm.getValue();
+            document.getElementById('wordCount').textContent = content.replace(/^\s+|\s+$/g, "").split(/\s+/).length;
+            document.getElementById('charCount').textContent = content.length;
+        });
+
+        // 标签管理
+        const tagContainer = document.getElementById('tagContainer');
+        const tagInput = document.getElementById('tagInput');
+
+        tagInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && tagInput.value.trim()) {
+                const tag = document.createElement('div');
+                tag.className = 'tag-item';
+                tag.innerHTML = `
+                    ${tagInput.value.trim()}
+                    <i class="fas fa-times tag-remove"></i>
+                `;
+                tag.querySelector('.tag-remove').addEventListener('click', () => {
+                    tag.remove();
+                });
+                tagContainer.appendChild(tag);
+                tagInput.value = '';
+            }
+        });
+
+        // 封面图片上传
+        document.getElementById('coverUpload').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = document.getElementById('coverPreview');
+                        img.src = e.target.result;
+                        img.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        });
+
+        // 表单验证
+        document.querySelector('.btn-primary').addEventListener('click', () => {
+            const title = document.getElementById('postTitle').value.trim();
+            if (!title) {
+                document.getElementById('postTitle').style.borderColor = (--error-color);
+                return alert('请输入文章标题');
+            }
+            if (editor.getValue().trim().length < 500) {
+                return alert('文章内容至少需要500字');
+            }
+            // 提交逻辑...
+            alert('文章已发布！');
+        });
+    </script>
+</body>
+</html>

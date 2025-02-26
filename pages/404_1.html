@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面未找到 - 技术博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 继承主站样式 */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --text-color: #34495e;
+            --bg-color: #f8f9fa;
+        }
+
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .error-content {
+            max-width: 800px;
+            position: relative;
+        }
+
+        .error-code {
+            font-size: 15rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            line-height: 1;
+            opacity: 0.9;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .error-message {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin: 2rem 0;
+        }
+
+        .search-box {
+            max-width: 500px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 2rem;
+            border: 2px solid var(--secondary-color);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(52,152,219,0.2);
+        }
+
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .back-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        .error-illustration {
+            width: 300px;
+            margin: 2rem auto;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 8rem;
+            }
+            
+            .error-message {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏（与主站一致） -->
+    <nav class="navbar">...</nav>
+
+    <main class="error-container">
+        <div class="error-content">
+            <svg class="error-illustration" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path fill="var(--secondary-color)" d="M49.8,-57.2C64.6,-45.6,76.1,-30.8,79.8,-14.3C83.5,2.2,79.5,20.3,69.5,34.6C59.5,48.9,43.5,59.4,26.6,65.8C9.7,72.2,-8.1,74.4,-23.4,69.3C-38.7,64.1,-51.5,51.5,-61.4,36.9C-71.3,22.3,-78.3,5.6,-75.4,-9.3C-72.5,-24.3,-59.7,-37.5,-45.4,-49.5C-31.1,-61.5,-15.6,-72.3,0.7,-73.1C17,-73.9,34.1,-64.8,49.8,-57.2Z" transform="translate(100 100)"/>
+            </svg>
+            
+            <h1 class="error-code">404</h1>
+            <p class="error-message">
+                哎呀！看起来你闯入了未知领域<br>
+                你要找的页面可能已经飘向远方...
+            </p>
+            
+            <div class="search-box">
+                <input type="text" 
+                       class="search-input" 
+                       placeholder="试试搜索文章..."
+                       id="searchInput">
+                <i class="fas fa-search"></i>
+            </div>
+
+            <a href="/" class="back-home">
+                <i class="fas fa-rocket"></i>
+                返回安全基地
+            </a>
+        </div>
+    </main>
+
+    <!-- 页脚（与主站一致） -->
+    <footer class="site-footer">...</footer>
+
+    <script>
+        // 搜索功能（与主站保持一致）
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (query) {
+                    window.location.href = `/search?q=${encodeURIComponent(query)}`;
+                }
+            }
+        });
+
+        // 动态粒子背景（可选）
+        class Particle {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                this.width = this.canvas.width = window.innerWidth;
+                this.height = this.canvas.height = window.innerHeight;
+            }
+
+            draw() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+                // 添加粒子动画绘制逻辑...
+            }
+        }
+
+        // 初始化粒子系统
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'fixed';
+        canvas.style.top = 0;
+        canvas.style.left = 0;
+        canvas.style.zIndex = -1;
+        document.body.appendChild(canvas);
+        
+        new Particle(canvas).draw();
+    </script>
+</body>
+</html>
